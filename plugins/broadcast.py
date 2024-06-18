@@ -14,7 +14,7 @@ def get_msg(m):
     msg = (
         m.reply_to_message
         if m.reply_to_message
-        else ""
+        else None
         if len(m.command) < 2
         else " ".join(m.command[1:])
     )
@@ -37,15 +37,13 @@ async def broadcast_group(c: Client, m: types.Message):
     async def send_broadcast(chat_id):
         nonlocal done, error
         try:
-            if m.reply_to_message:
-                await msg.copy(chat_id)
-            else:
-                await c.send_message(chat_id, msg)
+            await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
             done += 1
-            await asyncio.sleep(0.5)
+            if done % 4 == 0:
+                await asyncio.sleep(1.5)
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
-            await send_broadcast(chat_id)
+            await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
         except Exception:
             error += 1
 
@@ -70,15 +68,13 @@ async def broadcast_users(c: Client, m: types.Message):
     async def send_broadcast(chat_id):
         nonlocal done, error
         try:
-            if m.reply_to_message:
-                await msg.copy(chat_id)
-            else:
-                await c.send_message(chat_id, msg)
+            await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
             done += 1
-            await asyncio.sleep(0.5)
+            if done % 4 == 0:
+                await asyncio.sleep(1.5)
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
-            await send_broadcast(chat_id)
+            await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
         except Exception:
             error += 1
 
@@ -102,12 +98,13 @@ async def broadcast_forward(c: Client, m: types.Message):
     async def send_broadcast(chat_id):
         nonlocal done, error
         try:
-            await m.reply_to_message.forward(chat_id)
+            await reply.forward(chat_id)
             done += 1
-            await asyncio.sleep(0.5)
+            if done % 4 == 0:
+                await asyncio.sleep(0.5)
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
-            await send_broadcast(chat_id)
+            await reply.forward(chat_id)
         except Exception:
             error += 1
 
