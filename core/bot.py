@@ -4,10 +4,10 @@ from pyrogram import Client, idle as idling
 
 
 client = Client(
-     "SolidUbot",
+     "PyroUbot",
      api_id=config.api_id,
      api_hash=config.api_hash,
-     device_model="SolidUbot",
+     device_model="PyroUbot",
      plugins=dict(root="plugins"),
      in_memory=False,
 )
