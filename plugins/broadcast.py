@@ -9,7 +9,6 @@ from pyrogram import (
 )
 
 
-
 def get_msg(m):
     msg = (
         m.reply_to_message
@@ -48,6 +47,8 @@ async def broadcast_group(c: Client, m: types.Message):
             error += 1
 
     for chat_id in chat_ids: # loop
+        if chat_id in config.group_blacklist:
+            continue
         await send_broadcast(chat_id)
     return await load.edit(f"<i>Broadcast was sent to {done} groups, failed to send to {error} groups(s)</i>")
 
@@ -109,5 +110,7 @@ async def broadcast_forward(c: Client, m: types.Message):
             error += 1
 
     for chat_id in chat_ids: # loop
+        if chat_id in config.group_blacklist:
+            continue
         await send_broadcast(chat_id)
     return await load.edit(f"<i>Broadcast was send to {done} forward, failed to send to {error} forward(s)")

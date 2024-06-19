@@ -4,6 +4,14 @@ import os
 
 load_dotenv()
 
-api_id = os.getenv("API_ID", "2040")
-api_hash = os.getenv("API_HASH", "b18441a1ff607e10a989891a5462e627")
+api_id = int(os.getenv("API_ID", ""))
+api_hash = os.getenv("API_HASH", "")
+
 prefix = os.getenv("PREFIX", "! . * ^").split()
+group_blacklist = [
+    -1001883961446,
+    -1001847953700,
+    -1001473548283,
+    -1001777794636,
+    -1001109837870
+]
