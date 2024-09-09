@@ -1,4 +1,7 @@
 import asyncio
+import typing
+import contextlib
+
 import config
 from pyrogram import (
   Client,
@@ -9,14 +12,16 @@ from pyrogram import (
 )
 
 
-def get_msg(m):
-    msg = (
-        m.reply_to_message
-        if m.reply_to_message
-        else None
-        if len(m.command) < 2
-        else " ".join(m.command[1:])
-    )
+def get_msg(m: types.Message) -> types.Message:
+    msg: typing.Union[str, types.Message] = None
+    if rep := m.reply_to_message:
+        msg = rep
+
+    elif len(m.command) > 1:
+        msg = (m.text or m.caption).split(None, 1)[1]
+    else:
+        return None
+
     return msg
 
 
@@ -24,8 +29,11 @@ def get_msg(m):
 async def broadcast_group(c: Client, m: types.Message):
     msg = get_msg(m)
     if not msg:
-        return await m.reply("Give me a message or reply to a message!")
-    load = await m.reply("Broadcast Group processing....")
+        with contextlib.suppress(errors.SlowmodeWait):
+            return await m.reply("Give me a message or reply to a message!")
+    load = None
+    with contextlib.suppress(errors.SlowmodeWait):
+        load = await m.reply("Broadcast Group processing....")
     done = error = 0
     chat_ids = []
 
@@ -43,22 +51,26 @@ async def broadcast_group(c: Client, m: types.Message):
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
             await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
-        except Exception:
+        except Exception: # type: ignore
             error += 1
 
     for chat_id in chat_ids: # loop
         if chat_id in config.group_blacklist:
             continue
         await send_broadcast(chat_id)
-    return await load.edit(f"<i>Broadcast was sent to {done} groups, failed to send to {error} groups(s)</i>")
+    if done:
+        return await load.edit(f"<i>Broadcast was sent to {done} groups, failed to send to {error} groups(s)</i>")
 
 
 @Client.on_message(filters.command("ucast", config.prefix) & filters.me)
 async def broadcast_users(c: Client, m: types.Message):
     msg = get_msg(m)
     if not msg:
-        return await m.reply("Give me a message or reply to a message!")
-    load = await m.reply("Broadcast users processing.....")
+        with contextlib.suppress(errors.SlowmodeWait):
+            return await m.reply("Give me a message or reply to a message!")
+    load = None
+    with contextlib.suppress(errors.SlowmodeWait):
+        load = await m.reply("Broadcast users processing.....")
     done = error = 0
     chat_ids = []
 
@@ -76,19 +88,23 @@ async def broadcast_users(c: Client, m: types.Message):
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
             await msg.copy(chat_id) if m.reply_to_message else await c.send_message(chat_id, msg)
-        except Exception:
+        except Exception: # type: ignore
             error += 1
 
     for chat_id in chat_ids: # loop
         await send_broadcast(chat_id)
-    return await load.edit(f"<i>Broadcast was send to {done} users, failed to send to {error} users(s)</i>")
+    if done:
+        return await load.edit(f"<i>Broadcast was send to {done} users, failed to send to {error} users(s)</i>")
 
 
 @Client.on_message(filters.command("fwdcast", config.prefix) & filters.me)
 async def broadcast_forward(c: Client, m: types.Message):
     if not (reply := m.reply_to_message):
-        return await m.reply("Reply to messages you want to continue posting")
-    load = await m.reply("Broadcast forward processing....")
+        with contextlib.suppress(errors.SlowmodeWait):
+            return await m.reply("Reply to messages you want to continue posting")
+    load = None
+    with contextlib.suppress(errors.SlowmodeWait):
+        load = await m.reply("Broadcast forward processing....")
     done = error = 0
     chat_ids = []
 
@@ -106,11 +122,12 @@ async def broadcast_forward(c: Client, m: types.Message):
         except errors.FloodWait as f:
             await asyncio.sleep(f.value + 1)
             await reply.forward(chat_id)
-        except Exception:
+        except Exception: # type: ignore
             error += 1
 
     for chat_id in chat_ids: # loop
         if chat_id in config.group_blacklist:
             continue
         await send_broadcast(chat_id)
-    return await load.edit(f"<i>Broadcast was send to {done} forward, failed to send to {error} forward(s)")
+    if load:
+        return await load.edit(f"<i>Broadcast was send to {done} forward, failed to send to {error} forward(s)")
