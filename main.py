@@ -22,4 +22,10 @@ async def main():
 
 
 if __name__  == "__main__":
+    try:
+        import uvloop
+    except ImportError:
+        pass
+    else:
+        uvloop.install()
     bot.client.run(main())
