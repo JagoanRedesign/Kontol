@@ -11,6 +11,9 @@ async def main():
     logger.setLevel(logging.INFO)
     logger.info("initializing userbots...")
     await bot.client.start()
+    ex = await bot.get_me()
+    print(f"Started as {ex.first_name} | {ex.id} ")
+           
     logger.info("userbots initializing✓")
     logger.info("idling...")
     await bot.idle()
@@ -19,11 +22,11 @@ async def main():
     logger.info("userbots stopped!")
 
 
-if __name__  == "__main__":
+if __name__ == "__main__":
     try:
         import uvloop
     except ImportError:
-        pass
+        asyncio.run(main())  # Jika uvloop tidak tersedia, jalankan dengan asyncio
     else:
-        uvloop.install()
-    bot.client.run(main())
+        uvloop.install()  # Install uvloop jika tersedia
+        asyncio.run(main()) 
