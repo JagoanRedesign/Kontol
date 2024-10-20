@@ -11,11 +11,8 @@ async def main():
     logger.setLevel(logging.INFO)
     logger.info("initializing userbots...")
     await bot.client.start()
-    ex = await bot.get_me()
-    print(f"Started as {ex.first_name} | {ex.id} ")
-           
     logger.info("userbots initializing✓")
-    logger.info("idling...")
+    logger.info("berjalan ...")
     await bot.idle()
     logger.info("stopping userbots...")
     await bot.client.stop()
