@@ -2,3 +2,4 @@ tgcrypto-pyrofork
 pyrofork
 python-dotenv
 uvloop
+Flask
