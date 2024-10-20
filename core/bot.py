@@ -8,7 +8,7 @@ client = Client(
      api_id=config.api_id,
      api_hash=config.api_hash,
      session_string=config.session_string,
-     device_model="PyroUbot",
+     device_model="Duta Ubot",
      plugins=dict(root="plugins"),
      in_memory=False,
 )
