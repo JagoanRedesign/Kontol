@@ -3,3 +3,10 @@ pyrofork
 python-dotenv
 uvloop
 Flask
+aiohttp
+SQLAlchemy
+pytimeparse
+pytz
+pytest
+loguru
+aiofiles
