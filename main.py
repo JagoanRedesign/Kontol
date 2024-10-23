@@ -29,7 +29,7 @@ def health_check():
 
 # Fungsi untuk menjalankan aplikasi Flask
 def run_flask():
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8000)
 
 if __name__ == "__main__":
     try:
