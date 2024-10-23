@@ -1,6 +1,10 @@
 import logging
 from core import bot
+from flask import Flask, jsonify
+import threading
 
+
+app = Flask(__name__)
 
 async def main():
     logging.basicConfig(
