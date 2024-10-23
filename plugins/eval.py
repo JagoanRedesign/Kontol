@@ -18,39 +18,45 @@ def get_size(bytes, suffix="B"):
         bytes /= factor
 
 async def aexec(cmd, client, message):
+    # Menggunakan exec dalam konteks lokal
     exec_locals = {}
     try:
-        # Menggunakan exec untuk mengeksekusi kode
+        # Definisikan fungsi asinkron dalam konteks lokal
         exec(f"async def func():\n    {cmd}", exec_locals)
+        # Jalankan fungsi tersebut
         await exec_locals['func']()
     except Exception as e:
         raise e  # Lemparkan kesalahan yang terjadi
 
 @Client.on_message(filters.command("eval", config.prefix) & filters.me)
-async def eval_command(client: Client, message: Message):
+async def eval_command(client: Client, message):
     cmd = message.text.split(" ", maxsplit=1)[1] if len(message.text.split(" ")) > 1 else None
     if not cmd:
         return await message.reply("`Give me commands dude...`")
     
     ajg = await message.reply("`Processing ...`")
     reply_to_ = message.reply_to_message or message
-    old_stderr = sys.stderr
+    
+    # Alihkan output
     old_stdout = sys.stdout
     redirected_output = sys.stdout = StringIO()
+    old_stderr = sys.stderr
     redirected_error = sys.stderr = StringIO()
     
+    exc = None
     try:
         await aexec(cmd, client, message)
     except Exception:
-        exc = traceback.format_exc()
-    else:
-        exc = None
-
+        exc = traceback.format_exc()  # Tangkap kesalahan
+    
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
+    
+    # Kembalikan output ke stdout dan stderr asli
     sys.stdout = old_stdout
     sys.stderr = old_stderr
     
+    # Tentukan evaluasi akhir
     evaluation = exc if exc else stderr if stderr else stdout.strip() if stdout.strip() else "Success"
     
     final_output = "OUTPUT:\n" + evaluation.strip()
@@ -66,9 +72,9 @@ async def eval_command(client: Client, message: Message):
             )
     else:
         await reply_to_.reply_text(final_output, quote=True)
+    
     await ajg.delete()
 
-    
 
 @Client.on_message(filters.command("host", config.prefix) & filters.me)
 async def cek_host(client: Client, message: Message):
