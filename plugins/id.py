@@ -1,5 +1,8 @@
 import config
-from pyrogram import Client, filters, enums, types
+import asyncio
+
+from pyrogram import Client, filters, types
+
 
 @Client.on_message(filters.command("id", config.prefix) & filters.me)
 async def get_id(c: Client, m: types.Message):
