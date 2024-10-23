@@ -2,6 +2,7 @@ import asyncio
 import logging
 from flask import Flask, jsonify
 from core import bot
+import threading
 
 app = Flask(__name__)
 
@@ -22,8 +23,8 @@ async def run_bot():
     await bot.client.stop()
     logger.info("userbots stopped!")
 
-# Endpoint untuk pemeriksaan kesehatan
-@app.route('/health', methods=['GET'])
+# Endpoint untuk pemeriksaan kesehatan (diganti menjadi '/')
+@app.route('/', methods=['GET'])
 def health_check():
     return jsonify(status='healthy'), 200
 
@@ -32,16 +33,14 @@ def run_flask():
     app.run(host='0.0.0.0', port=8000)
 
 if __name__ == "__main__":
-    try:
-        import uvloop
-    except ImportError:
-        loop = asyncio.get_event_loop()
-        # Menjalankan bot di thread terpisah
-        loop.run_until_complete(run_bot())
-        run_flask()
-    else:
-        uvloop.install()  # Install uvloop jika tersedia
-        loop = asyncio.get_event_loop()
-        # Menjalankan bot di thread terpisah
-        loop.run_until_complete(run_bot())
-        run_flask()
+    loop = asyncio.get_event_loop()  # Ambil event loop saat ini
+    
+    # Menjalankan bot di thread terpisah
+    bot_thread = threading.Thread(target=lambda: loop.run_until_complete(run_bot()))
+    bot_thread.start()
+    
+    # Menjalankan Flask di thread utama
+    run_flask()
+    
+    # Tunggu hingga thread bot selesai sebelum keluar
+    bot_thread.join()
