@@ -8,10 +8,7 @@ import psutil
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-USER_ID = 2025873184  
-async def aexec(cmd, client, message):
-    # Implement your async exec function here
-    pass
+
 
 def get_size(bytes, suffix="B"):
     factor = 1024
@@ -19,6 +16,16 @@ def get_size(bytes, suffix="B"):
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
+
+async def aexec(cmd, client, message):
+    exec_locals = {}
+    try:
+        # Menggunakan exec untuk mengeksekusi kode
+        exec(f"async def func():\n    {cmd}", exec_locals)
+        await exec_locals['func']()
+    except Exception as e:
+        raise e  # Lemparkan kesalahan yang terjadi
+
 @Client.on_message(filters.command("eval", config.prefix) & filters.me)
 async def eval_command(client: Client, message: Message):
     cmd = message.text.split(" ", maxsplit=1)[1] if len(message.text.split(" ")) > 1 else None
@@ -31,19 +38,21 @@ async def eval_command(client: Client, message: Message):
     old_stdout = sys.stdout
     redirected_output = sys.stdout = StringIO()
     redirected_error = sys.stderr = StringIO()
-    stdout, stderr, exc = None, None, None
     
     try:
         await aexec(cmd, client, message)
     except Exception:
         exc = traceback.format_exc()
-    
+    else:
+        exc = None
+
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
     sys.stdout = old_stdout
     sys.stderr = old_stderr
     
-    evaluation = exc if exc else stderr if stderr else stdout if stdout else "Success"
+    evaluation = exc if exc else stderr if stderr else stdout.strip() if stdout.strip() else "Success"
+    
     final_output = "OUTPUT:\n" + evaluation.strip()
     
     if len(final_output) > 4096:
@@ -59,8 +68,9 @@ async def eval_command(client: Client, message: Message):
         await reply_to_.reply_text(final_output, quote=True)
     await ajg.delete()
 
-@Client.on_message(filters.command("host", config.prefix) & filters.me)
+    
 
+@Client.on_message(filters.command("host", config.prefix) & filters.me)
 async def cek_host(client: Client, message: Message):
     xx = await message.reply("Processing...")
     uname = platform.uname()
