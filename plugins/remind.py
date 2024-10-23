@@ -13,7 +13,7 @@ scheduled_messages = []  # Menyimpan pesan yang dijadwalkan
 async def remind(c: Client, m: types.Message):
     # Memeriksa panjang perintah
     if len(m.command) < 4:
-        await m.reply("Penggunaan: `.remind <waktu> <pesan> <jumlah>`\n\nContoh:\n`/remind 1m Beli susu 10`")
+        await m.reply("Penggunaan: `.remind <waktu> <pesan> <jumlah>`\n\nContoh:\n`.remind 1m Beli susu 10`")
         return
 
     time_from_now = m.command[1]
@@ -26,28 +26,27 @@ async def remind(c: Client, m: types.Message):
     if delay is None:
         await m.reply("Format waktu tidak valid. Contoh: `1m`, `2h`, `15s`.")
         return
-        
-      await m.reply(f"Pengingat disimpan, akan mengirim '{text_to_remind}' sebanyak {repeat_count} kali dengan interval {time_from_now}.")
-      
+
+    # Menyimpan pengingat
+    reminders.append((now + timedelta(seconds=delay), text_to_remind))
+
+    await m.reply(f"Pengingat disimpan, akan mengirim '{text_to_remind}' sebanyak {repeat_count} kali dengan interval {time_from_now}.")
+    
     # Mengirim pengingat sesuai jumlah yang diminta
     for i in range(repeat_count):
         await asyncio.sleep(delay)  # Tunggu selama 'delay'
         await c.send_message(m.chat.id, text_to_remind)
 
-  
 @Client.on_message(filters.command("listremind", config.prefix) & filters.me)
 async def list_reminders(c: Client, m: types.Message):
     if len(reminders) == 0:
         await m.reply("Tidak ada pengingat yang tersimpan.")
     else:
         response = "Daftar Pengingat:\n\n"
-        for i, reminder in enumerate(reminders, start=1):
-            t, text = reminder
-            response += f"{i}. {text} - {t.strftime('%d/%m/%Y %H:%M:%S')}\n"
+        for i, (t, text) in enumerate(reminders, start=1):
+            response += f"{i}. '{text}' - Dijadwalkan pada {t.strftime('%d/%m/%Y %H:%M:%S')}\n"
         await m.reply(response)
-        
-        
-        
+
 @Client.on_message(filters.command("listkirim", config.prefix) & filters.me)
 async def list_scheduled_messages(c: Client, m: types.Message):
     if len(scheduled_messages) == 0:
@@ -62,7 +61,7 @@ async def list_scheduled_messages(c: Client, m: types.Message):
 async def schedule_message(c: Client, m: types.Message):
     # Memeriksa panjang perintah
     if len(m.command) < 3:
-        await m.reply("Penggunaan: `{config.prefix} kirim <waktu> <pesan>`\n\nContoh:\n`.kirim 01:00 Ini pesan`")
+        await m.reply(f"Penggunaan: `{config.prefix}kirim <waktu> <pesan>`\n\nContoh:\n`{config.prefix}kirim 01:00 Ini pesan`")
         return
 
     scheduled_time = m.command[1]
