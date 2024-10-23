@@ -38,7 +38,7 @@ async def get_id(c: Client, m: types.Message):
 @Client.on_message(filters.command("gid", config.prefix) & filters.me)
 async def get_id_by_username(c: Client, m: types.Message):
     if len(m.command) < 2:
-        return await m.reply("Penggunaan: `{config.prefix}getid <username>`\nContoh: `{config.prefix}getid @username`")
+        return await m.reply("Penggunaan: `gid <username>`\nContoh: `gid @username`")
 
     username = m.command[1].strip('@')
     
