@@ -2,7 +2,6 @@ import logging
 import asyncio
 from core import bot
 from flask import Flask, jsonify
-import threading
 
 app = Flask(__name__)
 
@@ -26,19 +25,12 @@ async def main():
 def index():
     return jsonify({"message": "Bot is running! by Mz"})
 
-def run_flask():
-    app.run(host='0.0.0.0', port=8000)
-
 if __name__ == "__main__":
     # Menggunakan event loop default
     loop = asyncio.get_event_loop()
     
-    # Menjalankan bot di thread terpisah
-    bot_thread = threading.Thread(target=lambda: loop.run_until_complete(main()))
-    bot_thread.start()
+    # Menjalankan bot dan Flask dalam event loop yang sama
+    loop.run_until_complete(main())
     
-    # Menjalankan Flask di thread utama
-    run_flask()
-    
-    # Tunggu hingga thread bot selesai sebelum keluar
-    bot_thread.join()
+    # Menjalankan Flask dalam thread terpisah
+    app.run(host='0.0.0.0', port=8000)
