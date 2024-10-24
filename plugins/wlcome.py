@@ -58,19 +58,18 @@ async def set_welcome(c: Client, m: types.Message):
 
 
 
-@Client.on_chat_member_updated(filters.group)
-async def welcome_new_member(c: Client, m: types.ChatMemberUpdated):
+@Client.on_message(filters.new_chat_members)
+async def welcome_new_member(c: Client, m: types.Message):
     chat_id = m.chat.id
 
     # Debugging log
-    print(f"Member updated in chat {chat_id}: {m.new_chat_member.status}")
+    print(f"New member joined in chat {chat_id}: {m.new_chat_members}")
 
     # Pastikan kita hanya menyambut anggota baru yang bukan bot
     if chat_id in group_settings and group_settings[chat_id]["welcome_enabled"]:
-        if m.new_chat_member.status == "member":
-            # Cek jika anggota baru adalah bot
-            if not m.new_chat_member.user.is_bot:
-                user_name = m.new_chat_member.user.first_name if m.new_chat_member.user.first_name else "Sahabat"
+        for new_member in m.new_chat_members:
+            if new_member.status == "member" and not new_member.user.is_bot:
+                user_name = new_member.user.first_name if new_member.user.first_name else "Sahabat"
                 personalized_welcome = group_settings[chat_id]["welcome_message"].format(name=user_name)
 
                 # Debugging log
@@ -81,6 +80,4 @@ async def welcome_new_member(c: Client, m: types.ChatMemberUpdated):
                 except Exception as e:
                     print(f"Failed to send welcome message: {e}")
             else:
-                print(f"Skipped welcome for bot: {m.new_chat_member.user.username}")
-        else:
-            print(f"Member status changed but not a new member: {m.new_chat_member.status}")
+                print(f"Skipped welcome for bot: {new_member.user.username}")
