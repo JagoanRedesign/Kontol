@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from pyrogram import Client, filters, types
 from pytimeparse import parse
 from pytz import timezone
-from plugins.helpers.basic import edit_or_reply
+from plugins.help.basic import edit_or_reply
 import asyncio
 
 # Daftar pengingat yang tersimpan
