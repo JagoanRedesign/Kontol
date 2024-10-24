@@ -55,7 +55,7 @@ async def list_reminders(c: Client, m: types.Message):
 async def schedule_message(c: Client, m: types.Message):
     # Memeriksa panjang perintah
     if len(m.command) < 3:
-        await edit_or_reply(m, f"**Penggunaan:** `{config.prefix}send <waktu> <pesan>`\n\n**Contoh:**\n`{config.prefix}send 01:00 Ini pesan`")
+        await edit_or_reply(m, f"**Penggunaan:** `.send <waktu> <pesan>`\n\n**Contoh:**\n`.send 01:00 Ini pesan`")
         return
 
     scheduled_time = m.command[1]
