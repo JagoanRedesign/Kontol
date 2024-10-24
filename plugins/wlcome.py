@@ -68,8 +68,9 @@ async def welcome_new_member(c: Client, m: types.Message):
     # Pastikan kita hanya menyambut anggota baru yang bukan bot
     if chat_id in group_settings and group_settings[chat_id]["welcome_enabled"]:
         for new_member in m.new_chat_members:
-            if new_member.status == "member" and not new_member.user.is_bot:
-                user_name = new_member.user.first_name if new_member.user.first_name else "Sahabat"
+            # Cek jika anggota baru bukan bot
+            if not new_member.is_bot:
+                user_name = new_member.first_name if new_member.first_name else "Sahabat"
                 personalized_welcome = group_settings[chat_id]["welcome_message"].format(name=user_name)
 
                 # Debugging log
@@ -80,4 +81,4 @@ async def welcome_new_member(c: Client, m: types.Message):
                 except Exception as e:
                     print(f"Failed to send welcome message: {e}")
             else:
-                print(f"Skipped welcome for bot: {new_member.user.username}")
+                print(f"Skipped welcome for bot: {new_member.first_name}")
