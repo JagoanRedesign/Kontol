@@ -27,7 +27,7 @@ async def toggle_welcome(c: Client, m: types.Message):
         group_settings[chat_id]["welcome_enabled"] = False
         await edit_or_reply(m, "Fitur sambutan telah dimatikan.")
     elif command == "list":
-        active_welcomes = [f"- {group_settings[gid]['welcome_message']} (Grup: {gid})" for gid in group_settings if group_settings[gid]['welcome_enabled']]
+        active_welcomes = [f"- {group_settings[gid]['welcome_message']} ({gid})" for gid in group_settings if group_settings[gid]['welcome_enabled']]
         if active_welcomes:
             welcome_list = "\n".join(active_welcomes)
             await edit_or_reply(m, f"**Welcome yang saat ini aktif:**\n{welcome_list}")
@@ -50,18 +50,37 @@ async def set_welcome(c: Client, m: types.Message):
     new_welcome_message = " ".join(m.command[1:])
     
     if not new_welcome_message:
-        await edit_or_reply(m, "**Penggunaan:** `.set_welcome <kalimat_sambutan>`")
+        await edit_or_reply(m, "**Penggunaan:** `.set_welcome (kalimat sambutan)`")
         return
     
     group_settings[chat_id]["welcome_message"] = new_welcome_message
     await edit_or_reply(m, f"Kalimat sambutan telah diubah menjadi: `{new_welcome_message}`")
 
+
+
 @Client.on_chat_member_updated(filters.group)
 async def welcome_new_member(c: Client, m: types.ChatMemberUpdated):
     chat_id = m.chat.id
 
-    if chat_id in group_settings and group_settings[chat_id]["welcome_enabled"] and m.new_chat_member.status == "member":
-        user_name = m.new_chat_member.user.first_name if m.new_chat_member.user.first_name else "Sahabat"
-        personalized_welcome = group_settings[chat_id]["welcome_message"].format(name=user_name)
-        
-        await c.send_message(chat_id, personalized_welcome)
+    # Debugging log
+    print(f"Member updated in chat {chat_id}: {m.new_chat_member.status}")
+
+    # Pastikan kita hanya menyambut anggota baru yang bukan bot
+    if chat_id in group_settings and group_settings[chat_id]["welcome_enabled"]:
+        if m.new_chat_member.status == "member":
+            # Cek jika anggota baru adalah bot
+            if not m.new_chat_member.user.is_bot:
+                user_name = m.new_chat_member.user.first_name if m.new_chat_member.user.first_name else "Sahabat"
+                personalized_welcome = group_settings[chat_id]["welcome_message"].format(name=user_name)
+
+                # Debugging log
+                print(f"Welcome message for {user_name}: {personalized_welcome}")
+
+                try:
+                    await c.send_message(chat_id, personalized_welcome)
+                except Exception as e:
+                    print(f"Failed to send welcome message: {e}")
+            else:
+                print(f"Skipped welcome for bot: {m.new_chat_member.user.username}")
+        else:
+            print(f"Member status changed but not a new member: {m.new_chat_member.status}")
