@@ -4,6 +4,7 @@ from datetime import datetime
 from pyrogram import Client, filters, types
 from plugins.help.basic import edit_or_reply
 
+# Menetapkan waktu mulai bot
 StartTime = time.time()
 
 def get_readable_time(seconds: float) -> str:
@@ -27,26 +28,28 @@ def get_readable_time(seconds: float) -> str:
 
 @Client.on_message(filters.command("ping", config.prefix) & filters.me)
 async def kping(client: Client, message: types.Message):
-    uptime = await get_readable_time((time.time() - StartTime))
+    uptime = get_readable_time((time.time() - StartTime))  # Tidak perlu await
     start = datetime.now()
+    
     xx = await edit_or_reply(message, 
         f"█▀█ █▀█ █▄░█ █▀▀ █ \n"
         f"█▀▀ █▄█ █░▀█ █▄█ ▄"
     )
+    
     end = datetime.now()
     duration = (end - start).microseconds / 1000  # Menghitung durasi dalam milidetik
+    
     await xx.edit(
         f"➠ **Ping !! -** `{duration:.2f} ms`\n"  # Format durasi dengan 2 desimal
         f"➠ **Uptime -** `{uptime}`\n"
         f"➠ **User -** {client.me.mention}"
     )
 
-    
-
-@Client.on_message(filters.command("xping", config.prefix) & filters.me)
+@Client.on_message(filters.command("xbot", config.prefix) & filters.me)
 async def ping(c: Client, m: types.Message):
     start = m.date
     msg = await m.reply("ping...")
     end = datetime.now()
     return await msg.edit(
-        f"<b>Pong!</b>\n<code>{round((end - start).microseconds / 1000)}ms</code>")
+        f"<b>Pong!</b>\n<code>{round((end - start).microseconds / 1000)}ms</code>"
+    )
