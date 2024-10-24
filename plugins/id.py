@@ -1,6 +1,6 @@
 import config
 import asyncio
-from plugins.helpers.basic import edit_or_reply
+from plugins.help.basic import edit_or_reply
 from pyrogram import Client, filters, types
 from pyrogram import enums
 
