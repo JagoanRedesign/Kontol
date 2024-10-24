@@ -10,11 +10,11 @@ import asyncio
 reminders = []
 scheduled_messages = []  # Menyimpan pesan yang dijadwalkan
 
-@Client.on_message(filters.command("remind", config.prefix) & filters.me)
+@Client.on_message(filters.command("prom", config.prefix) & filters.me)
 async def remind(c: Client, m: types.Message):
     # Memeriksa panjang perintah
     if len(m.command) < 4:
-        await edit_or_reply(m, "**Penggunaan:** `.remind <waktu> <pesan> <jumlah>`\n\n**Contoh:**\n`.remind 1m Beli susu 10`")
+        await edit_or_reply(m, "**Penggunaan:** `.prom <waktu> <pesan> <jumlah>`\n\n**Contoh:**\n`.prom 1m Open BO SINI 10`")
         return
 
     time_from_now = m.command[1]
@@ -31,19 +31,19 @@ async def remind(c: Client, m: types.Message):
     # Menyimpan pengingat
     reminders.append((now + timedelta(seconds=delay), text_to_remind))
 
-    await edit_or_reply(m, f"Pengingat disimpan, akan mengirim '{text_to_remind}' sebanyak {repeat_count} kali dengan interval {time_from_now}.")
+    await edit_or_reply(m, f"**Promosi**, akan mengirim `{text_to_remind}` sebanyak {repeat_count} kali dengan jeda {time_from_now}.")
     
     # Mengirim pengingat sesuai jumlah yang diminta
     for i in range(repeat_count):
         await asyncio.sleep(delay)  # Tunggu selama 'delay'
         await c.send_message(m.chat.id, text_to_remind)
 
-@Client.on_message(filters.command("rlist", config.prefix) & filters.me)
+@Client.on_message(filters.command("plist", config.prefix) & filters.me)
 async def list_reminders(c: Client, m: types.Message):
     if len(reminders) == 0:
-        await edit_or_reply(m, "Tidak ada pengingat yang tersimpan.")
+        await edit_or_reply(m, "Tidak ada promosi yang tersimpan.")
     else:
-        response = "**Daftar Pengingat:**\n\n"
+        response = "**Daftar Promosi:**\n\n"
         for i, (t, text) in enumerate(reminders, start=1):
             response += f"{i}. `{text}` - Dijadwalkan pada {t.strftime('%d/%m/%Y %H:%M:%S')}\n"
         await edit_or_reply(m, response)
