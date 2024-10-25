@@ -81,7 +81,7 @@ async def cek_host(client: Client, message: Message):
         f"➠ **Versi**    : `{uname.version}`\n"
         f"➠ **Mesin**    : `{uname.machine}`\n"
         f"➠ **Waktu Hidup**: `{bt.day}/{bt.month}/{bt.year} {bt.hour}:{bt.minute}:{bt.second}`\n\n"
-        f"➠ **Informasi CPU**\n"
+        f"**Informasi CPU**\n"
         f"➠ **Cores Fisik**   : `{psutil.cpu_count(logical=False)}`\n"
         f"➠ **Total Cores**    : `{psutil.cpu_count(logical=True)}`\n"
     )
@@ -98,7 +98,7 @@ async def cek_host(client: Client, message: Message):
         softw += f"➠ **Core {i}**  : `{percentage}%`\n"
     
     softw += (
-        f"➠ **Total Penggunaan CPU**\n"
+        f"**Total Penggunaan CPU**\n"
         f"➠ **Semua Core**: `{psutil.cpu_percent()}%`\n\n"
         f"➠ **Bandwidth Digunakan**\n"
         f"➠ **Unggah**  : `{get_size(psutil.net_io_counters().bytes_sent)}`\n"
@@ -107,7 +107,7 @@ async def cek_host(client: Client, message: Message):
 
     svmem = psutil.virtual_memory()
     softw += (
-        f"➠ **Memori Digunakan**\n"
+        f"**Memori Digunakan**\n"
         f"➠ **Total**     : `{get_size(svmem.total)}`\n"
         f"➠ **Tersedia**  : `{get_size(svmem.available)}`\n"
         f"➠ **Digunakan**  : `{get_size(svmem.used)}`\n"
