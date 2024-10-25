@@ -3,6 +3,7 @@ import asyncio
 from core import bot
 from flask import Flask, jsonify
 import threading
+from plugins.adzan import app
 
 app = Flask(__name__)
 
