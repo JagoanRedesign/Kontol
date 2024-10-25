@@ -7,3 +7,5 @@ pyrogram
 pytimeparse
 pytz
 psutil
+requests
+APScheduler
