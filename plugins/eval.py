@@ -100,7 +100,7 @@ async def cek_host(client: Client, message: Message):
     softw += (
         f"**Total Penggunaan CPU**\n"
         f"➠ **Semua Core**: `{psutil.cpu_percent()}%`\n\n"
-        f"➠ **Bandwidth Digunakan**\n"
+        f"**Bandwidth Digunakan**\n"
         f"➠ **Unggah**  : `{get_size(psutil.net_io_counters().bytes_sent)}`\n"
         f"➠ **Download**: `{get_size(psutil.net_io_counters().bytes_recv)}`\n\n"
     )
