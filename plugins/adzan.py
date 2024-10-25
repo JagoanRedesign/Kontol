@@ -89,7 +89,7 @@ async def get_jadwal(c: Client, m):
     jadwal = fetch_jadwal_sholat(chat_id)
     
     if jadwal:
-            jadwal_sholat[chat_id] = jadwal
+        jadwal_sholat[chat_id] = jadwal  # Simpan jadwal sholat untuk grup
         jadwal_message = (
             f"📅 Jadwal Sholat untuk hari ini:\n"
             f"🕕 Subuh: {jadwal['subuh']}\n"
