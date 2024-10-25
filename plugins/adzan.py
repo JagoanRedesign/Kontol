@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 from pyrogram import Client, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
 
 API_URL = "https://api.myquran.com/v2/sholat/jadwal/1301/{}"
 LOCATION = "Asia/Jakarta"
@@ -82,5 +83,23 @@ async def list_adzan_groups(c: Client, m):
     else:
         await m.reply("Tidak ada grup yang mengaktifkan pengingat adzan saat ini.")
 
+@Client.on_message(filters.command("jadwal", prefixes=".") & filters.group)
+async def get_jadwal(c: Client, m):
+    chat_id = m.chat.id
+    jadwal = fetch_jadwal_sholat(chat_id)
+    
+    if jadwal:
+            jadwal_sholat[chat_id] = jadwal
+        jadwal_message = (
+            f"📅 Jadwal Sholat untuk hari ini:\n"
+            f"🕕 Subuh: {jadwal['subuh']}\n"
+            f"🕖 Dzuhur: {jadwal['dzuhur']}\n"
+            f"🕔 Ashar: {jadwal['ashar']}\n"
+            f"🕕 Maghrib: {jadwal['maghrib']}\n"
+            f"🕙 Isya: {jadwal['isya']}"
+        )
+        await m.reply(jadwal_message)
+    else:
+        await m.reply("⚠️ Gagal mengambil jadwal sholat, silakan coba lagi nanti.")
 
 scheduler.start()  # Mulai scheduler
